@@ -19,15 +19,15 @@ public class PlayerMoving : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        coffee<GetComponent>
-        coffee = transform.position;
+        //coffee<GetComponent>
+        //coffee = transform.position;
         
-        float activeDistance = transform.position - coffeePos;
+        //float activeDistance = transform.position - coffeePos;
 
 
 
 
-        if ()
+        //if ()
         {
 
         }
