@@ -15,6 +15,9 @@ public class PlantSlider : MonoBehaviour
         plantSlider.minValue = 0;
         plantSlider.maxValue = numPlants - 1; // 0 to (numPlants-1)
 
+        // Set the slider's initial value to match the currentPlantIndex in PlantManager
+        plantSlider.value = plantManager.GetCurrentPlantIndex();
+
         // Slider value change event
         // Reference https://docs.unity3d.com/2018.3/Documentation/ScriptReference/UI.Slider-onValueChanged.html
         plantSlider.onValueChanged.AddListener(OnSliderChange);
@@ -24,9 +27,12 @@ public class PlantSlider : MonoBehaviour
     {
         // Convert slider value to an integer to select plant
         // Reference https://docs.unity3d.com/540/Documentation/ScriptReference/Mathf.RoundToInt.html
-        int selectedPlantIndex = Mathf.RoundToInt(value); //Round to the near int
+        int selectedPlantIndex = Mathf.RoundToInt(value); //Round to the near int 
 
         // Select the plant based on the slider value
         plantManager.SelectPlant(selectedPlantIndex);
+
+        // Update the plant display
+        plantManager.UpdatePlantDisplayUI();
     }
 }

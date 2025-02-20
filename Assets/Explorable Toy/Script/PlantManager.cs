@@ -17,10 +17,16 @@ public class PlantManager : MonoBehaviour
     // UI Image to display plant stages
     public Image plantDisplay;
 
+    // Default image for plantDisplay
+    public Sprite defaultPlantImage; // Assign this in the Inspector
+
     // Time interval for growth
     public float growInterval = 2f;
     // Time before plant shrinks without water
     public float waterThreshold = 5f;
+
+    // Reference to the spawn position
+    public Transform PlantSpawnPosition;
 
     GameObject currentPlant;
     int currentStage = 0;
@@ -29,7 +35,7 @@ public class PlantManager : MonoBehaviour
     float waterTimer = 0f;
 
     private List<List<GameObject>> allPlants = new List<List<GameObject>>();
-    private bool plantIsDead = true; // Track if plant is dead
+    private bool plantIsDead = true;
 
     void Start()
     {
@@ -37,6 +43,16 @@ public class PlantManager : MonoBehaviour
         allPlants.Add(moneyTreeStages);
         allPlants.Add(sunflowerStages);
         allPlants.Add(tomatoStages);
+
+        // Set the default image for plantDisplay
+        if (defaultPlantImage != null)
+        {
+            plantDisplay.sprite = defaultPlantImage;
+        }
+
+        // Set initial plant selection (e.g., first plant)
+        currentPlantIndex = 0; // Default to the first plant
+        UpdatePlantDisplayUI(); // Update the display with the initial plant's image
     }
 
     void Update()
@@ -79,8 +95,11 @@ public class PlantManager : MonoBehaviour
             Destroy(currentPlant);
         }
 
-        // Update the plant image in the UI by setting the sprite
-        plantDisplay.sprite = allPlants[currentPlantIndex][currentStage].GetComponent<SpriteRenderer>().sprite;
+        // Instantiate the new stage from 0
+        currentPlant = Instantiate(allPlants[currentPlantIndex][currentStage], PlantSpawnPosition.position, Quaternion.identity);
+
+        // Set the plant as a child of the PlantSpawnPosition
+        currentPlant.transform.SetParent(PlantSpawnPosition, false);
     }
 
     void DestroyPlant()
@@ -95,11 +114,19 @@ public class PlantManager : MonoBehaviour
     public void SelectPlant(int plantIndex)
     {
         currentPlantIndex = plantIndex;
-        currentStage = 0;  // Reset to the initial stage
-        growthTimer = 0f;
-        waterTimer = 0f;
-        plantIsDead = false;
-        UpdatePlantStage();
+        Debug.Log("Selected Plant: " + plantIndex);
+    }
+
+    public void UpdatePlantDisplayUI()
+    {
+        if (currentPlantIndex != -1)
+        {
+            // Get the sprite from the first stage of the selected plant
+            Sprite plantSprite = allPlants[currentPlantIndex][0].GetComponent<SpriteRenderer>().sprite;
+
+            // Update the plantDisplay UI image with the static sprite
+            plantDisplay.sprite = plantSprite;
+        }
     }
 
     public void GrowPlant()
@@ -122,5 +149,10 @@ public class PlantManager : MonoBehaviour
     public void WaterPlant()
     {
         waterTimer = 0.0f;  // Reset water timer
+    }
+
+    public int GetCurrentPlantIndex()
+    {
+        return currentPlantIndex;
     }
 }
