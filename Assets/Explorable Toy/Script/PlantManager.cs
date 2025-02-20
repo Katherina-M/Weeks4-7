@@ -18,7 +18,7 @@ public class PlantManager : MonoBehaviour
     public Image plantDisplay;
 
     // Default image for plantDisplay
-    public Sprite defaultPlantImage; // Assign this in the Inspector
+    public Sprite defaultPlantImage;
 
     // Plant spawn position 
     public Image PlantSpawnPosition;
@@ -89,22 +89,41 @@ public class PlantManager : MonoBehaviour
 
     void UpdatePlantStage()
     {
-        // Destroy current plant
+        //// Destroy current plant
+        //if (currentPlant != null)
+        //{
+        //    Destroy(currentPlant);
+        //}
+
+        //// Instantiate the new stage from 0
+        //currentPlant = Instantiate(allPlants[currentPlantIndex][currentStage], PlantSpawnPosition.transform);
+
+        //// Set the plant's RectTransform to match the PlantSpawnPosition
+        //RectTransform plantRect = currentPlant.GetComponent<RectTransform>();
+        //if (plantRect != null)
+        //{
+        //    plantRect.anchoredPosition = Vector2.zero; // Center within PlantSpawnPosition
+        //    plantRect.sizeDelta = Vector2.zero; // Match size of PlantSpawnPosition
+        //}
+
         if (currentPlant != null)
         {
             Destroy(currentPlant);
         }
 
-        // Instantiate the new stage from 0
         currentPlant = Instantiate(allPlants[currentPlantIndex][currentStage], PlantSpawnPosition.transform);
+        currentPlant.transform.SetParent(PlantSpawnPosition.transform, false);
 
-        // Set the plant's RectTransform to match the PlantSpawnPosition
         RectTransform plantRect = currentPlant.GetComponent<RectTransform>();
         if (plantRect != null)
         {
-            plantRect.anchoredPosition = Vector2.zero; // Center within PlantSpawnPosition
-            plantRect.sizeDelta = Vector2.zero; // Match size of PlantSpawnPosition
+            plantRect.anchoredPosition = Vector2.zero;
+            plantRect.sizeDelta = PlantSpawnPosition.rectTransform.sizeDelta;
+            plantRect.localScale = Vector3.one;
         }
+
+        Debug.Log("Spawned Plant: " + currentPlant.name + " at " + plantRect.anchoredPosition);
+
     }
 
     void DestroyPlant()
