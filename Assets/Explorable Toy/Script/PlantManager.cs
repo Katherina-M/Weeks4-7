@@ -4,6 +4,7 @@ using System.Drawing;
 using UnityEditor;
 using UnityEditor.Tilemaps;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlantManager : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class PlantManager : MonoBehaviour
     public List<GameObject> moneyTreeStages;
     public List<GameObject> sunflowerStages;
     public List<GameObject> tomatoStages;
+
+    // UI Image to display plant stages
+    public Image plantDisplay;
 
     // Time interval for growth
     public float growInterval = 2f;
@@ -75,8 +79,8 @@ public class PlantManager : MonoBehaviour
             Destroy(currentPlant);
         }
 
-        // Instantiate the new stage from 0
-        currentPlant = Instantiate(allPlants[currentPlantIndex][currentStage], Vector3.zero, Quaternion.identity);
+        // Update the plant image in the UI by setting the sprite
+        plantDisplay.sprite = allPlants[currentPlantIndex][currentStage].GetComponent<SpriteRenderer>().sprite;
     }
 
     void DestroyPlant()
@@ -91,7 +95,11 @@ public class PlantManager : MonoBehaviour
     public void SelectPlant(int plantIndex)
     {
         currentPlantIndex = plantIndex;
-        Debug.Log("Selected Plant: " + plantIndex);
+        currentStage = 0;  // Reset to the initial stage
+        growthTimer = 0f;
+        waterTimer = 0f;
+        plantIsDead = false;
+        UpdatePlantStage();
     }
 
     public void GrowPlant()
