@@ -24,15 +24,15 @@ public class PlantManager : MonoBehaviour
     public Image PlantSpawnPosition;
 
     // Time interval for growth
-    public float growInterval = 2f;
+    public float growInterval = 10f;
     // Time before plant shrinks without water
-    public float waterThreshold = 5f;
+    public float waterThreshold = 2f;
 
     GameObject currentPlant;
     int currentStage = 0;
     int currentPlantIndex = -1; //No plant selected initially
-    float growthTimer = 0f;
-    float waterTimer = 0f;
+    float growthTimer = 5f;
+    float waterTimer = 10f;
 
     private List<List<GameObject>> allPlants = new List<List<GameObject>>();
     private bool plantIsDead = true;
@@ -66,13 +66,16 @@ public class PlantManager : MonoBehaviour
             {
                 if (waterTimer < waterThreshold)
                 {
-                    GrowToNextStage();
+                    DestroyPlant();  // Destroy the plant immediately if not watered
+                    return; // Exit the update
                 }
-                else
+
+                // Proceed with growth if the plant is watered
+                if (growthTimer >= growInterval)
                 {
-                    DestroyPlant();  // Dies without water
+                    GrowToNextStage();
+                    growthTimer = 0f; // Reset growth timer after growing to the next stage
                 }
-                growthTimer = 0f;
             }
         }
     }
@@ -89,28 +92,13 @@ public class PlantManager : MonoBehaviour
 
     void UpdatePlantStage()
     {
-        //// Destroy current plant
-        //if (currentPlant != null)
-        //{
-        //    Destroy(currentPlant);
-        //}
-
-        //// Instantiate the new stage from 0
-        //currentPlant = Instantiate(allPlants[currentPlantIndex][currentStage], PlantSpawnPosition.transform);
-
-        //// Set the plant's RectTransform to match the PlantSpawnPosition
-        //RectTransform plantRect = currentPlant.GetComponent<RectTransform>();
-        //if (plantRect != null)
-        //{
-        //    plantRect.anchoredPosition = Vector2.zero; // Center within PlantSpawnPosition
-        //    plantRect.sizeDelta = Vector2.zero; // Match size of PlantSpawnPosition
-        //}
-
+        // if current plant is not empty, destory it
         if (currentPlant != null)
         {
             Destroy(currentPlant);
         }
 
+        // Recalled the new selected plant
         currentPlant = Instantiate(allPlants[currentPlantIndex][currentStage], PlantSpawnPosition.transform);
         currentPlant.transform.SetParent(PlantSpawnPosition.transform, false);
 
@@ -121,9 +109,6 @@ public class PlantManager : MonoBehaviour
             plantRect.sizeDelta = PlantSpawnPosition.rectTransform.sizeDelta;
             plantRect.localScale = Vector3.one;
         }
-
-        Debug.Log("Spawned Plant: " + currentPlant.name + " at " + plantRect.anchoredPosition);
-
     }
 
     void DestroyPlant()
