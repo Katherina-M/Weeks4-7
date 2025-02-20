@@ -20,13 +20,13 @@ public class PlantManager : MonoBehaviour
     // Default image for plantDisplay
     public Sprite defaultPlantImage; // Assign this in the Inspector
 
+    // Plant spawn position 
+    public Image PlantSpawnPosition;
+
     // Time interval for growth
     public float growInterval = 2f;
     // Time before plant shrinks without water
     public float waterThreshold = 5f;
-
-    // Reference to the spawn position
-    public Transform PlantSpawnPosition;
 
     GameObject currentPlant;
     int currentStage = 0;
@@ -96,10 +96,15 @@ public class PlantManager : MonoBehaviour
         }
 
         // Instantiate the new stage from 0
-        currentPlant = Instantiate(allPlants[currentPlantIndex][currentStage], PlantSpawnPosition.position, Quaternion.identity);
+        currentPlant = Instantiate(allPlants[currentPlantIndex][currentStage], PlantSpawnPosition.transform);
 
-        // Set the plant as a child of the PlantSpawnPosition
-        currentPlant.transform.SetParent(PlantSpawnPosition, false);
+        // Set the plant's RectTransform to match the PlantSpawnPosition
+        RectTransform plantRect = currentPlant.GetComponent<RectTransform>();
+        if (plantRect != null)
+        {
+            plantRect.anchoredPosition = Vector2.zero; // Center within PlantSpawnPosition
+            plantRect.sizeDelta = Vector2.zero; // Match size of PlantSpawnPosition
+        }
     }
 
     void DestroyPlant()
@@ -126,6 +131,11 @@ public class PlantManager : MonoBehaviour
 
             // Update the plantDisplay UI image with the static sprite
             plantDisplay.sprite = plantSprite;
+        }
+        else
+        {
+            // If no plant is selected, set the default image
+            plantDisplay.sprite = defaultPlantImage;
         }
     }
 
