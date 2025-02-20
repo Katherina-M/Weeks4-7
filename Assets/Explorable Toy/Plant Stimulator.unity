@@ -416,7 +416,7 @@ MonoBehaviour:
   defaultPlantImage: {fileID: 21300000, guid: 81307247eed47e74c9a269e4fd06bada, type: 3}
   PlantSpawnPosition: {fileID: 1445739406}
   growInterval: 2
-  waterThreshold: 5
+  wateringTime: 2
 --- !u!4 &644052399
 Transform:
   m_ObjectHideFlags: 0

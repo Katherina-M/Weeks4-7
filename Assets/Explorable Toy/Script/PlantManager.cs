@@ -24,18 +24,22 @@ public class PlantManager : MonoBehaviour
     public Image PlantSpawnPosition;
 
     // Time interval for growth
-    public float growInterval = 10f;
-    // Time before plant shrinks without water
-    public float waterThreshold = 2f;
+    public float growInterval = 2f;
+    // Time allowed for clicking to water the plant
+    public float wateringTime = 2f; 
 
     GameObject currentPlant;
     int currentStage = 0;
     int currentPlantIndex = -1; //No plant selected initially
-    float growthTimer = 5f;
-    float waterTimer = 10f;
+    float growthTimer = 0f;
+    float wateringTimer = 0f;
 
     private List<List<GameObject>> allPlants = new List<List<GameObject>>();
     private bool plantIsDead = true;
+
+    // Track clicks for watering
+    private int clickCount = 0;
+    private bool isInGrowthPhase = false;
 
     void Start()
     {
@@ -60,26 +64,56 @@ public class PlantManager : MonoBehaviour
         if (currentPlant != null && !plantIsDead)
         {
             growthTimer += Time.deltaTime;
-            waterTimer += Time.deltaTime;
 
-            if (growthTimer >= growInterval)
+            // Check if the plant is in the growth phase
+            if (isInGrowthPhase)
             {
-                if (waterTimer < waterThreshold)
-                {
-                    DestroyPlant();  // Destroy the plant immediately if not watered
-                    return; // Exit the update
-                }
+                wateringTimer += Time.deltaTime;
 
-                // Proceed with growth if the plant is watered
-                if (growthTimer >= growInterval)
+                // Check if the player has clicked enough times
+                if (clickCount >= 5)
                 {
                     GrowToNextStage();
-                    growthTimer = 0f; // Reset growth timer after growing to the next stage
+                    isInGrowthPhase = false; // Exit growth phase
+                    clickCount = 0; // Reset click counter
+                    wateringTimer = 0f; // Reset watering timer
+                }
+
+                // Check if the watering time has expired
+                if (wateringTimer >= wateringTime)
+                {
+                    DestroyPlant();  // Destroy the plant if not watered in time
+                    return; // Exit the Update method early
                 }
             }
+
+            // Check if the plant is ready to enter the growth phase
+            if (growthTimer >= growInterval)
+            {
+                isInGrowthPhase = true; // Enter growth phase
+                growthTimer = 0f; // Reset growth timer
+                wateringTimer = 0f; // Reset watering timer
+                clickCount = 0; // Reset click counter
+                Debug.Log("Entered growth phase! Click 5 times to water the plant.");
+            }
+        }
+        // Handle player input for watering (clicks or taps)
+        if (Input.GetMouseButtonDown(0)) // Left mouse button or touch
+        {
+            RegisterClick();
         }
     }
 
+    void RegisterClick()
+    {
+        if (!plantIsDead && isInGrowthPhase)
+        {
+            clickCount++;
+            Debug.Log("Clicks: " + clickCount);
+
+            // Optional: Provide feedback for each click (e.g., sound or visual effect)
+        }
+    }
 
     void GrowToNextStage()
     {
@@ -87,8 +121,15 @@ public class PlantManager : MonoBehaviour
         {
             currentStage++;
             UpdatePlantStage();
+            Debug.Log("Plant grew to stage " + currentStage);
+        }
+        else
+        {
+            // If the plant has reached the final stage, it no longer needs to grow
+            Debug.Log("Plant has reached the final stage!");
         }
     }
+
 
     void UpdatePlantStage()
     {
@@ -118,6 +159,7 @@ public class PlantManager : MonoBehaviour
             Destroy(currentPlant);
         }
         plantIsDead = true;
+        Debug.Log("Plant has died due to lack of water!");
     }
 
     public void SelectPlant(int plantIndex)
@@ -154,7 +196,7 @@ public class PlantManager : MonoBehaviour
         // Reset plant properties
         currentStage = 0;
         growthTimer = 0f;
-        waterTimer = 0f;
+        wateringTimer = 0f;
         plantIsDead = false;
 
         UpdatePlantStage();
@@ -162,7 +204,7 @@ public class PlantManager : MonoBehaviour
 
     public void WaterPlant()
     {
-        waterTimer = 0.0f;  // Reset water timer
+        wateringTimer = 0.0f;  // Reset water timer
     }
 
     public int GetCurrentPlantIndex()
