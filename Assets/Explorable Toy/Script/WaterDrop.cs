@@ -20,7 +20,7 @@ public class WaterDrop : MonoBehaviour
     void Update()
         {
         // Move the water drop downward
-        transform.position += Vector3.down * fallSpeed * Time.deltaTime;
+        transform.position -= Vector3.down * fallSpeed * Time.deltaTime;
 
         // Ensure the drop does not move horizontally and stays in 2D plane
         transform.position = new Vector3(transform.position.x, transform.position.y, 0);
