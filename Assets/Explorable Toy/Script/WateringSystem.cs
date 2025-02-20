@@ -10,8 +10,8 @@ public class WateringSystem : MonoBehaviour
 
     void Update()
     {
-        // Check for screen click
-        if (Input.GetMouseButtonDown(0)) //Left click
+        // Check for screen click && Only allow watering if plant exists
+        if (Input.GetMouseButtonDown(0) && plantManager.HasActivePlant())
         {
             WaterPlant();
         }

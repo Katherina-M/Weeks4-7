@@ -184,4 +184,9 @@ public class PlantManager : MonoBehaviour
     {
         return currentPlantIndex;
     }
+
+    public bool HasActivePlant()
+    {
+        return currentPlant != null && !plantIsDead;
+    }
 }
